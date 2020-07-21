@@ -64,13 +64,13 @@ There are many tools that can provide the function of marking and labeling a bun
 However, most of them are not free or mainly constructed for **LiDAR** data.
 
 - https://www.basicfinder.com/en (service, NOT FREE)
-    ![basicfinder](./images/basicfinder.gif =80%x)
+    ![basicfinder](./images/basicfinder.gif )
 
 - https://supervise.ly/lidar-3d-cloud (online)
-    ![supervise](./images/supervise.gif =80%x)
+    ![supervise](./images/supervise.gif)
 
 - https://github.com/Allchen/3D-Label-PointCloud (local installation)
-    ![supervise](./images/3d_label_pointcloud_github.gif =80%x)
+    ![supervise](./images/3d_label_pointcloud_github.gif)
 
 - https://github.com/walzimmer/3d-bat (local installation)
-    ![3d-bat](./images/3d_bat.gif =80%x)
+    ![3d-bat](./images/3d_bat.gif)
