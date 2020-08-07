@@ -10,53 +10,7 @@
 
 ## Test Dataset
 
-### [`KITTI`](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d)
-
-1. Rading and visulization Tools
-
-    1.1 Copy this code as following into your favorite text editor.
-
-    <details>
-    <summary>converter</summary>
-
-    ``` python
-    import struct
-    import sys
-
-    def convert_kitti_bin_to_pcd(ifile,ofile):
-        size_float = 4
-        list_points = []
-        # read from ifile
-        with open(ifile, "rb") as f:
-            byte = f.read(size_float * 4)
-            while byte:
-                x, y, z, intensity = struct.unpack("ffff", byte)
-                list_points.append([x, y, z])
-                byte = f.read(size_float * 4)
-        # write into ofile
-        with open(ofile, 'w') as f:
-            for points in list_points:
-                for item in points:
-                    f.write(str(item)+' ')
-                f.write('\n')
-
-    if __name__ == "__main__":
-        if len(sys.argv) < 2: 
-            print("please use: python converter.py [filename] like `python converter.py 000000.bin`\noutput file(*.txt) will be named after filename from input.")
-            exit()
-        bin_filename = sys.argv[1]
-        txt_filename = bin_filename[:bin_filename.find('.')]+".txt"
-        print("Reading:",bin_filename)
-        print("Writing:",txt_filename)
-        convert_kitti_bin_to_pcd(bin_filename,txt_filename)
-        print("Finished")
-    ```
-    </details>
-
-    execute converting by running `python converter_bin2txt.py 000000.bin `
-
-    1.2 Download [CloudCompare](https://www.danielgm.net/cc) as a visualization tool.
-
+### [`KITTI`](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) (see more [tools](./tools) used in this project)
 
 ## 3D Point Cloud Labeling Tools
 
