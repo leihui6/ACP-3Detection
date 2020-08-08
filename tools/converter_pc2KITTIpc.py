@@ -30,18 +30,19 @@ def get_pc(ifile):
 
 
 if __name__ == "__main__":
-    arg.add_argument("--folder", "-f", default="", type=str, help="files captured locally")
+    arg.add_argument("--folder", "-f", default="", type=str, help="folder containing many point cloud captured locally")
     args = arg.parse_args()
+
     input_folder = args.folder
-    print('input folder:\t',input_folder)
+    print('input folder:\t', input_folder)
     outout_folder = "KITTI_"+input_folder
 
     if not os.path.exists(outout_folder):
         os.mkdir(outout_folder)
 
-    print('output folder:\t',outout_folder)
-    bin_list = os.listdir(input_folder)
-    # print(bin_list)
+    print('output folder:\t', outout_folder)
+    bin_list = [bin_file for bin_file in os.listdir(input_folder) if ".bin" in bin_file]
+    print('detect %d files in %s/' %(len(bin_list), input_folder))
 
     for idx, bin_file in enumerate(bin_list):
         pc = get_pc(input_folder+'/'+bin_file)

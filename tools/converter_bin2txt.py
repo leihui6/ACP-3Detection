@@ -3,7 +3,9 @@
 import numpy as np
 import struct
 import sys
-import numpy
+import argparse
+
+arg = argparse.ArgumentParser("bin2txt")
 
 def convert_kitti_bin_to_pcd(ifile,ofile):
     size_float = 4
@@ -23,13 +25,15 @@ def convert_kitti_bin_to_pcd(ifile,ofile):
                 f.write(str(item)+' ')
             f.write('\n')
 
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2: 
-        print("please use: python converter.py [filename] like `python converter.py 000000.bin`\noutput file(*.txt) will be named after filename from input.")
-        exit()
-    bin_filename = sys.argv[1]
+    arg.add_argument("--input", "-i", default="", type=str, help="input *.bin file")
+    args = arg.parse_args()
+
+    bin_filename = args.input
     txt_filename = bin_filename[:bin_filename.find('.')]+".txt"
-    print("Reading:",bin_filename)
-    print("Writing:",txt_filename)
-    convert_kitti_bin_to_pcd(bin_filename,txt_filename)
+
+    print("Reading:", bin_filename)
+    print("Writing:", txt_filename)
+    convert_kitti_bin_to_pcd(bin_filename, txt_filename)
     print("Finished")
