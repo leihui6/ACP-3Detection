@@ -1,6 +1,7 @@
 import json
 import copy
 import argparse
+import os
 import collections
 
 arg = argparse.ArgumentParser("mylabel2KITTIlabel")
@@ -17,39 +18,49 @@ target_label['rotation_y'] = 0
 # target_label['score'] = 'Dontcare'
 
 if __name__ == '__main__':
-    arg.add_argument("--input", "-i", default="", type=str, help="input file obtained from https://3d.supervise.ly/projects")
+    arg.add_argument("--input", "-i", default="", type=str, help="input file obtained from https://3d.supervise.ly/projects", required=True)
+    arg.add_argument("--output_folder", "-o", default="", type=str, help="output folder", required=True)
     args = arg.parse_args()
 
     input_filename = args.input
-    output_filename = input_filename[:input_filename.find('.')]+".txt"
-
+    output_folder = args.output_folder
     print('input filename:\t', input_filename)
-    print('output filename:\t', output_filename)
+    print('output folder:\t', output_folder)
 
     with open(input_filename) as f:
         data = json.load(f)
 
-    my_annotations = data[0]['annotations']
-    KITTI_annotations = []
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
 
-    for annotation in my_annotations:
-        tmp_target_label = copy.deepcopy(target_label)
-        tmp_target_label['type'] = annotation['className']
-        tmp_target_label['dimensions'] = list(annotation['geometry']['dimensions'].values())
-        tmp_target_label['location'] = list(annotation['geometry']['position'].values())
-        tmp_target_label['rotation_y'] = annotation['geometry']['rotation']["z"]
-        KITTI_annotations.append(tmp_target_label)
+    for idx, annotations in enumerate(data):
+        KITTI_annotations = []
+        my_annotations = annotations['annotations']
 
-    with open(output_filename, 'w') as f:
-        for item in KITTI_annotations:
-            value_list = list(item.values())
-            for value in value_list:
-                if isinstance(value, list):
-                    for v in value:
-                        f.write(str(round(v, 2))+' ')
-                else:
-                    if isinstance(value, str):
-                        f.write(value+' ')
+        # produce new annotations
+        for annotation in my_annotations:
+            tmp_target_label = copy.deepcopy(target_label)
+            tmp_target_label['type'] = annotation['className']
+            tmp_target_label['dimensions'] = list(annotation['geometry']['dimensions'].values())
+            tmp_target_label['location'] = list(annotation['geometry']['position'].values())
+            tmp_target_label['rotation_y'] = annotation['geometry']['rotation']["z"]
+            KITTI_annotations.append(tmp_target_label)
+
+        # save current annotation into
+        save_filename = "{:06n}.txt".format(idx)
+        save_path = output_folder+'/'+save_filename
+        print('saving {}'.format(save_path))
+
+        with open(save_path, 'w') as f:
+            for item in KITTI_annotations:
+                value_list = list(item.values())
+                for value in value_list:
+                    if isinstance(value, list):
+                        for v in value:
+                            f.write(str(round(v, 2))+' ')
                     else:
-                        f.write(str(round(value, 2)) + ' ')
-            f.write('\n')
+                        if isinstance(value, str):
+                            f.write(value+' ')
+                        else:
+                            f.write(str(round(value, 2)) + ' ')
+                f.write('\n')
