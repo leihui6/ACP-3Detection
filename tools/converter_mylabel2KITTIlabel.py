@@ -3,6 +3,7 @@ import copy
 import argparse
 import os
 import collections
+import numpy as np
 
 arg = argparse.ArgumentParser("mylabel2KITTIlabel")
 
@@ -16,6 +17,26 @@ target_label['dimensions'] = []
 target_label['location'] = []
 target_label['rotation_y'] = 0
 # target_label['score'] = 'Dontcare'
+
+transform_location = np.mat([
+    [0, -1, 0],
+    [0, 0, -1],
+    [1, 0, 0],
+])
+
+
+def get_transformed_values(_list, m):
+    r = m*np.mat(_list).T
+    r = r.T
+    return r.tolist()[0]
+
+
+def get_dimensions(_list):
+    x = _list[0]
+    y = _list[1]
+    z = _list[2]
+    return list([z, x, y])
+
 
 if __name__ == '__main__':
     arg.add_argument("--input", "-i", default="", type=str, help="input file obtained from https://3d.supervise.ly/projects", required=True)
@@ -41,11 +62,16 @@ if __name__ == '__main__':
         for annotation in my_annotations:
             tmp_target_label = copy.deepcopy(target_label)
             tmp_target_label['type'] = annotation['className']
-            tmp_target_label['dimensions'] = list(annotation['geometry']['dimensions'].values())
-            tmp_target_label['location'] = list(annotation['geometry']['position'].values())
+            # print(list(annotation['geometry']['dimensions'].values()))
+            tmp_target_label['dimensions'] = get_dimensions(
+                list(annotation['geometry']['dimensions'].values()))
+            print('dimensions', tmp_target_label['dimensions'])
+            tmp_target_label['location'] = get_transformed_values(
+                list(annotation['geometry']['position'].values()), transform_location)
+            # print('location', tmp_target_label['location'])
             tmp_target_label['rotation_y'] = annotation['geometry']['rotation']["z"]
             KITTI_annotations.append(tmp_target_label)
-
+        # exit()
         # save current annotation into
         save_filename = "{:06n}.txt".format(idx)
         save_path = output_folder+'/'+save_filename
