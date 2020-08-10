@@ -12,7 +12,7 @@ arg = argparse.ArgumentParser("pc2KITTIpc")
 transform_matrix = np.mat(np.array([
             [0, 0, 1, 0],
             [1, 0, 0, 0],
-            [0, 1, 0, 0],
+            [0, 1, 0, -0.91],
             [0, 0, 0, 1]]))
 
 

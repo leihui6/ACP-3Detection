@@ -18,6 +18,9 @@ target_label['location'] = []
 target_label['rotation_y'] = 0
 # target_label['score'] = 'Dontcare'
 
+# the height of velodyne camera
+camera_height = -1.73
+
 transform_location = np.mat([
     [0, -1, 0],
     [0, 0, -1],
@@ -65,9 +68,10 @@ if __name__ == '__main__':
             # print(list(annotation['geometry']['dimensions'].values()))
             tmp_target_label['dimensions'] = get_dimensions(
                 list(annotation['geometry']['dimensions'].values()))
-            print('dimensions', tmp_target_label['dimensions'])
-            tmp_target_label['location'] = get_transformed_values(
-                list(annotation['geometry']['position'].values()), transform_location)
+            # print('dimensions', tmp_target_label['dimensions'])
+            position = list(annotation['geometry']['position'].values())
+            position[2] = camera_height
+            tmp_target_label['location'] = get_transformed_values(position, transform_location)
             # print('location', tmp_target_label['location'])
             tmp_target_label['rotation_y'] = annotation['geometry']['rotation']["z"]
             KITTI_annotations.append(tmp_target_label)
