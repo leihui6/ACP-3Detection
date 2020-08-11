@@ -70,10 +70,11 @@ if __name__ == '__main__':
                 list(annotation['geometry']['dimensions'].values()))
             # print('dimensions', tmp_target_label['dimensions'])
             position = list(annotation['geometry']['position'].values())
-            position[2] = camera_height
+            position[2] = camera_height # z
+            position[0] =  position[0]  - 0.27# x
             tmp_target_label['location'] = get_transformed_values(position, transform_location)
             # print('location', tmp_target_label['location'])
-            tmp_target_label['rotation_y'] = annotation['geometry']['rotation']["z"]
+            tmp_target_label['rotation_y'] = -float(annotation['geometry']['rotation']["z"])
             KITTI_annotations.append(tmp_target_label)
         # exit()
         # save current annotation into
