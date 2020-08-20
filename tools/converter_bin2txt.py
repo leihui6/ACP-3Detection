@@ -5,6 +5,7 @@ import argparse
 
 arg = argparse.ArgumentParser("bin2txt")
 
+
 def convert_kitti_bin_to_pcd(ifile,ofile):
     size_float = 4
     # read from ifile

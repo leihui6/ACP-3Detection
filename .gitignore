@@ -1,1 +1,7 @@
 .idea/
+venv/
+*.out
+*.bin
+*.pcd
+*.pth
+*.zip
