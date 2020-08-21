@@ -29,6 +29,8 @@ def get_pc(ifile):
     return list_points
 
 
+start_number = 97
+
 if __name__ == "__main__":
     arg.add_argument("--folder", "-f", default="", type=str, help="folder containing many point cloud captured locally", required=True)
     args = arg.parse_args()
@@ -55,7 +57,7 @@ if __name__ == "__main__":
         t_pc = transform_matrix*pc_numpy
         t_pc[3:] = intensity
         # print(t_pc.T)
-        save_filename = output_folder+'/'+"{:06n}.bin".format(idx)
+        save_filename = output_folder+'/'+"{:06n}.bin".format(idx+start_number)
         with open(save_filename, "bw") as f:
             t_pc.T.astype(np.float32).tofile(f)
         print('write into {}({}/{})'.format(save_filename, idx+1, len(bin_list)))

@@ -1,5 +1,7 @@
 .idea/
 venv/
+*label*/
+datasets/
 *.out
 *.bin
 *.pcd
