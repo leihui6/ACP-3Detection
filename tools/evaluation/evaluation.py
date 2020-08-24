@@ -114,12 +114,14 @@ if __name__ == '__main__':
     # print(standard_data_list)
 
     for idx, item in enumerate(standard_data_list):
+        print('{}->{}'.format(len(item), len(trained_data_list[idx])))
         for specific_label in item:
             # print(specific_label)
-            label = np.array(position_dimension_rotation(specific_label))
+            label = np.array(position_dimension_rotation(specific_label)).round(8)
             p = np.array([label[0], label[1], label[2]])
-            tar_label = get_closest_one(p, trained_data_list[idx])
+            tar_label = np.array(get_closest_one(p, trained_data_list[idx])).round(8)
             print('Now compare between\n', label, '\nand\n', tar_label)
+            height = np.fabs(tar_label[2]) if np.fabs(label[2]) > np.fabs(tar_label[2]) else np.fabs(label[2])
 
             # standard data(marked manually)
             standard_draw_corners, standard_rectangle_2d \
@@ -128,5 +130,7 @@ if __name__ == '__main__':
             detected_draw_corners, detected_rectangle_2d \
                 = read_from_label(tar_label)
             # interest_area rect1_area rect2_area
-            overlap = calculate_overlapping(standard_rectangle_2d, detected_rectangle_2d, True)
-            print('overlap', overlap)
+            # print('Now compare between\n', standard_rectangle_2d, '\nand\n', detected_rectangle_2d)
+            overlap = calculate_overlapping(standard_rectangle_2d, detected_rectangle_2d, False)
+            print('overlap_volume, overlap[0], height', overlap[0] * height, overlap[0], height)
+
