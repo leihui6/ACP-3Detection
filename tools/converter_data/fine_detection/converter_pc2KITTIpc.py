@@ -1,35 +1,46 @@
 # convert point cloud captured using PMD camera into the format of KITTI, as followings:
 # transform the coordinate
 
+"""
+
+The point cloud processed in this project are captured above a table surface.
+So, first we should do is to adjust the height of whole point cloud.
+
+"""
+
 import copy
 import argparse
 import os
 import struct
 import numpy as np
 
-arg = argparse.ArgumentParser("pc2KITTIpc")
+arg = argparse.ArgumentParser("pc2_KITTI_pc")
 
+# Height info:
+# kitti_camera : 1.73 m
+# PMD_camera in this project: 0.796 m
+# 1.73 - 0.305 = 1.425
 transform_matrix = np.mat(np.array([
             [0, 0, 1, 5.0],
             [1, 0, 0, 0],
-            [0, 1, 0, -0.817],
+            [0, 1, 0, -1.425],
             [0, 0, 0, 1]]))
 
 
-def get_pc(ifile):
+def get_pc(filename):
     size_float = 4
-    # read from ifile
+    # read from filename
     list_points = []
-    with open(ifile, "rb") as f:
+    with open(filename, "rb") as f:
         byte = f.read(size_float * 4)
         while byte:
-            x, y, z, intensity = struct.unpack("ffff", byte)
-            list_points.append([x, y, z, intensity])
+            x, y, z, i = struct.unpack("ffff", byte)
+            list_points.append([x, y, z, i])
             byte = f.read(size_float * 4)
     return list_points
 
 
-start_number = 97
+start_number = 0
 
 if __name__ == "__main__":
     arg.add_argument("--folder", "-f", default="", type=str, help="folder containing many point cloud captured locally", required=True)

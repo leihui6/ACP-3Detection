@@ -84,6 +84,7 @@ def get_transformation(filename):
     value_list = []
     with open(filename, 'r') as f:
         for item in f:
+            print(item)
             v = [float(number) for number in item.strip().split(' ')]
             value_list.append(v)
 
