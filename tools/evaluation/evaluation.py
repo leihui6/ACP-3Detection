@@ -1,4 +1,8 @@
 # evaluate the trained result with standard label marked manually
+# before running, please make sure
+# 'trained_label' and 'standard_label' folder
+# is existing in current work path
+
 import numpy as np
 import copy
 import os

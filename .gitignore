@@ -1,10 +1,9 @@
 .idea/
 venv/
 __pycache__/
-*label*/
-datasets/
 *.out
 *.bin
 *.pcd
 *.pth
 *.zip
+*.txt
