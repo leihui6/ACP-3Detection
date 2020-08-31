@@ -20,8 +20,10 @@ arg = argparse.ArgumentParser("pc2_KITTI_pc")
 # kitti_camera : 1.73 m
 # PMD_camera in this project: 0.796 m
 # 1.73 - 0.305 = 1.425
+
+# x + 7m
 transform_matrix = np.mat(np.array([
-            [0, 0, 1, 5.0],
+            [0, 0, 1, 7],
             [1, 0, 0, 0],
             [0, 1, 0, -1.425],
             [0, 0, 0, 1]]))

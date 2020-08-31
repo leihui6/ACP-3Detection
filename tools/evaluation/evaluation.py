@@ -81,6 +81,8 @@ def get_trained_data_list():
         res = get_trained_data(filename)
         if res:
             train_data.append(res)
+        else:
+            train_data.append(res)
     return train_data
 
 
@@ -108,20 +110,27 @@ if __name__ == '__main__':
     # get filename list
     trained_data_list = get_trained_data_list()
     standard_data_list = get_standard_data_list()
-    # print(trained_filename_list, standard_filename_list)
 
     # print(trained_data_list)
     # print(standard_data_list)
 
+    # standard_volume = XXXX
+
+    sum_volume, volume_count = 0, 0
     for idx, item in enumerate(standard_data_list):
-        print('{}->{}'.format(len(item), len(trained_data_list[idx])))
+        # print('{}->{}'.format(len(item), len(trained_data_list[idx])))
         for specific_label in item:
             # print(specific_label)
             label = np.array(position_dimension_rotation(specific_label)).round(8)
             p = np.array([label[0], label[1], label[2]])
+
+            if len(trained_data_list[idx]) == 0:
+                volume_count = volume_count + 1
+                continue
+
             tar_label = np.array(get_closest_one(p, trained_data_list[idx])).round(8)
-            print('Now compare between\n', label, '\nand\n', tar_label)
-            height = np.fabs(tar_label[2]) if np.fabs(label[2]) > np.fabs(tar_label[2]) else np.fabs(label[2])
+            # print('Now compare between\n', label, '\nand\n', tar_label)
+            height = np.fabs(tar_label[5]) if np.fabs(label[5]) > np.fabs(tar_label[5]) else np.fabs(label[5])
 
             # standard data(marked manually)
             standard_draw_corners, standard_rectangle_2d \
@@ -132,5 +141,8 @@ if __name__ == '__main__':
             # interest_area rect1_area rect2_area
             # print('Now compare between\n', standard_rectangle_2d, '\nand\n', detected_rectangle_2d)
             overlap = calculate_overlapping(standard_rectangle_2d, detected_rectangle_2d, False)
-            print('overlap_volume, overlap[0], height', overlap[0] * height, overlap[0], height)
+            sum_volume = sum_volume + overlap[0] * height
+            volume_count = volume_count + 1
+            print('overlap_volume(cm^3), overlap, height', overlap[0] * height * 10e6, overlap[0], height)
+    print('average volume(cm^3):', sum_volume/volume_count * 10e6)
 
