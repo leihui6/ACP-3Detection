@@ -19,6 +19,9 @@ def get_rotation_matrix_z(theta):
     ])
 
 
+# return drawable_corners, rectangle_2d
+# drawable_corners  : can be draw a 3D box directly
+# rectangle_2d      : can be evaluated in plane of XOY
 def read_from_label(res):
     # position, dimension, rotation
     x, y, z = 0, 0, 0
@@ -110,6 +113,22 @@ def get_trained_data(filename):
         return labels
 
 
+def get_delta_between_two_labels(standard_label, trained_label):
+    position_delta_x = np.fabs(standard_label[0] - trained_label[0])
+    position_delta_y = np.fabs(standard_label[1] - trained_label[1])
+    position_delta_z = np.fabs(standard_label[2] - trained_label[2])
+
+    dimension_delta_x = np.fabs(standard_label[3] - trained_label[3])
+    dimension_delta_y = np.fabs(standard_label[4] - trained_label[4])
+    dimension_delta_z = np.fabs(standard_label[5] - trained_label[5])
+
+    rotation_delta = np.fabs(standard_label[6] - trained_label[6])
+
+    return [position_delta_x, position_delta_y, position_delta_z,
+            dimension_delta_x, dimension_delta_y, dimension_delta_z,
+            rotation_delta]
+
+
 if __name__ == '__main__':
     # get filename list
     trained_data_list = get_trained_data_list()
@@ -118,7 +137,7 @@ if __name__ == '__main__':
     # print(trained_data_list)
     # print(standard_data_list)
 
-    # standard_volume = XXXX
+    standard_volume = 0
 
     sum_volume, volume_count = 0, 0
     for idx, item in enumerate(standard_data_list):
@@ -128,13 +147,16 @@ if __name__ == '__main__':
             label = np.array(position_dimension_rotation(specific_label)).round(8)
             p = np.array([label[0], label[1], label[2]])
 
+            # invalid data
             if len(trained_data_list[idx]) == 0:
                 volume_count = volume_count + 1
                 continue
 
+            # in practice, there will be only one label in trained label file
             tar_label = np.array(get_closest_one(p, trained_data_list[idx])).round(8)
             # print('Now compare between\n', label, '\nand\n', tar_label)
             height = np.fabs(tar_label[5]) if np.fabs(label[5]) > np.fabs(tar_label[5]) else np.fabs(label[5])
+            # print(label, tar_label)
 
             # standard data(marked manually)
             standard_draw_corners, standard_rectangle_2d \
@@ -142,11 +164,14 @@ if __name__ == '__main__':
             # trained data
             detected_draw_corners, detected_rectangle_2d \
                 = read_from_label(tar_label)
+            # delta between every items
+            delta_items = get_delta_between_two_labels(label, tar_label)
+
             # interest_area rect1_area rect2_area
             # print('Now compare between\n', standard_rectangle_2d, '\nand\n', detected_rectangle_2d)
             overlap = calculate_overlapping(standard_rectangle_2d, detected_rectangle_2d, False)
             sum_volume = sum_volume + overlap[0] * height
             volume_count = volume_count + 1
-            print('overlap_volume(cm^3), overlap, height', overlap[0] * height * 10e6, overlap[0], height)
-    print('average volume(cm^3):', sum_volume/volume_count * 10e6)
-
+            # original volume is based on m^3
+            print('[{:03n}]\toverlap_volume({} cm^3)\toverlap({} m^3)\theight({} m)'.format(idx, round(overlap[0] * height * 1e6, 6), round(overlap[0], 6), round(height, 6)))
+    print('average volume(cm^3):', np.fabs(sum_volume / volume_count * 1e6 - standard_volume))
