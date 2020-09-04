@@ -81,7 +81,7 @@ def get_closest_one(p, res):
 
 
 def get_trained_data_list():
-    folder_name = 'trained_label'
+    folder_name = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/100/evaluation_250'
     trained_filename_list = [folder_name + '/' + filename for filename in os.listdir(folder_name)]
     train_data = []
     for filename in trained_filename_list:
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     # print(standard_data_list)
 
     standard_volume = 0
-
+    skip_count = 0
     sum_volume, volume_count = 0, 0
     for idx, item in enumerate(standard_data_list):
         # print('{}->{}'.format(len(item), len(trained_data_list[idx])))
@@ -149,6 +149,7 @@ if __name__ == '__main__':
 
             # invalid data
             if len(trained_data_list[idx]) == 0:
+                skip_count = skip_count + 1
                 volume_count = volume_count + 1
                 continue
 
@@ -174,4 +175,4 @@ if __name__ == '__main__':
             volume_count = volume_count + 1
             # original volume is based on m^3
             print('[{:03n}]\toverlap_volume({} cm^3)\toverlap({} m^3)\theight({} m)'.format(idx, round(overlap[0] * height * 1e6, 6), round(overlap[0], 6), round(height, 6)))
-    print('average volume(cm^3):', np.fabs(sum_volume / volume_count * 1e6 - standard_volume))
+    print('average volume:{} cm^3, skip count:{}'.format(np.fabs(sum_volume / volume_count * 1e6 - standard_volume), skip_count))
