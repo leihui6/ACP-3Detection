@@ -81,7 +81,7 @@ def get_closest_one(p, res):
 
 
 def get_trained_data_list():
-    folder_name = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/100/evaluation_250'
+    folder_name = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/1000/2/evaluation_250'
     trained_filename_list = [folder_name + '/' + filename for filename in os.listdir(folder_name)]
     train_data = []
     for filename in trained_filename_list:
