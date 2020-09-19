@@ -29,6 +29,8 @@ arg = argparse.ArgumentParser("pc2_KITTI_pc")
 #    [0, 1, 0, -1.425],
 #    [0, 0, 0, 1]]))
 
+start_number = 944
+
 # 2 positive direction
 transform_matrix = np.mat(np.array([
     [0, 0, 1, 7],
@@ -62,8 +64,6 @@ def get_pc(filename):
             # skip = True
     return list_points
 
-
-start_number = 0
 
 if __name__ == "__main__":
     arg.add_argument("--folder", "-f", default="", type=str, help="folder containing many point cloud captured locally",

@@ -41,7 +41,9 @@ def get_dimensions(_list):
     return list([z, x, y])
 
 
-start_number = 0
+start_number = 944
+
+standard_label_number = 2
 
 if __name__ == '__main__':
     arg.add_argument("--input", "-i", default="", type=str, help="input file obtained from https://3d.supervise.ly/projects", required=True)
@@ -63,11 +65,14 @@ if __name__ == '__main__':
         KITTI_annotations = []
         my_annotations = annotations['annotations']
         data_name = annotations['name']
-        print('reading {} with {} label(s)'.format(data_name, len(my_annotations)))
+        # print('reading {} with {} label(s)'.format(data_name, len(my_annotations)))
 
-        if len(my_annotations) == 0:
-            print('warning {} is empty'.format(data_name))
+        curr_labels = len(my_annotations)
+        if curr_labels == 0:
+            print("WARNING {} is empty".format(data_name))
             continue
+        elif curr_labels is not standard_label_number:
+            print('WARNING {} is not standard_label_number({}) which containing {} labels'.format(data_name, standard_label_number, len(my_annotations)))
 
         # produce new annotations
         for annotation in my_annotations:
@@ -88,7 +93,7 @@ if __name__ == '__main__':
         # save current annotation into
         save_filename = "{:06n}.txt".format(idx+start_number)
         save_path = output_folder+'/'+save_filename
-        print('saving {}'.format(save_path))
+        # print('saving {}'.format(save_path))
 
         with open(save_path, 'w') as f:
             for item in KITTI_annotations:
