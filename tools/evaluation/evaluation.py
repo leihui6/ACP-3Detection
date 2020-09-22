@@ -1,12 +1,21 @@
 # evaluate the trained result with standard label marked manually
 # before running, please make sure
 # 'trained_label' and 'standard_label' folder
-# is existing in current work path
+# is existed in current work path
 
 import numpy as np
 import copy
 import os
 from interest_area import calculate_overlapping
+
+# required before use
+label_list = ['Socket', 'Plug']
+standard_volume = {
+    'Socket': 0,
+    'Plug': 0
+}
+
+trained_path = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for fine detection/evaluation_250'
 
 
 def get_rotation_matrix_z(theta):
@@ -53,6 +62,7 @@ def read_from_label(res):
 
 
 def position_dimension_rotation(KITTI_label):
+    # print(KITTI_label)
     # position dimension rotation
     """
     the number in label order is different from trained label files
@@ -68,20 +78,19 @@ def position_dimension_rotation(KITTI_label):
             KITTI_label[9], KITTI_label[10], KITTI_label[8], -KITTI_label[14]]
 
 
-def get_closest_one(p, res):
-    min_dis = np.linalg.norm(p - np.array([res[0][0], res[0][1], res[0][2]]))
-    tar_idx = 0
-    for idx, item in enumerate(res):
-        t_p = np.array([item[0], item[1], item[2]])
-        dis = np.linalg.norm(p - t_p)
-        if dis < min_dis:
-            min_dis = dis
-            tar_idx = idx
-    return res[tar_idx]
+def get_the_right_one(res_standard, res_trained):
+    tar_item = None
+    for t_item in res_trained:
+        if res_standard[0] == t_item[0]:
+            tar_item = copy.deepcopy(t_item)
+            tar_item.remove(tar_item[0])
+            break
+
+    return tar_item
 
 
 def get_trained_data_list():
-    folder_name = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/1000/2/evaluation_250'
+    folder_name = trained_path
     trained_filename_list = [folder_name + '/' + filename for filename in os.listdir(folder_name)]
     train_data = []
     for filename in trained_filename_list:
@@ -108,8 +117,15 @@ def get_trained_data(filename):
     with open(filename, 'r') as f:
         labels = []
         for label in f:
-            label_number = [float(number) if number != 'Car' else number for number in label.strip().split(' ')]
-            labels.append(label_number)
+            values = []
+            for number in label.strip().split(' '):
+                if number not in label_list:
+                    values.append(float(number))
+                else:
+                    values.append(number)
+            # print(values)
+            # label_number = [float(number) if number != 'Socket' else number for number in label.strip().split(' ')]
+            labels.append(values)
         return labels
 
 
@@ -137,24 +153,33 @@ if __name__ == '__main__':
     # print(trained_data_list)
     # print(standard_data_list)
 
-    standard_volume = 0
-    skip_count = 0
-    sum_volume, volume_count = 0, 0
+    skip_count = {key: 0 for key in label_list}
+    sum_volume, volume_count = {key: 0 for key in label_list}, {key: 0 for key in label_list}
+
     for idx, item in enumerate(standard_data_list):
         # print('{}->{}'.format(len(item), len(trained_data_list[idx])))
         for specific_label in item:
             # print(specific_label)
             label = np.array(position_dimension_rotation(specific_label)).round(8)
-            p = np.array([label[0], label[1], label[2]])
+            curr_label_name = specific_label[0]
 
-            # invalid data
+            # process invalid data
             if len(trained_data_list[idx]) == 0:
-                skip_count = skip_count + 1
-                volume_count = volume_count + 1
+                skip_count[curr_label_name] = skip_count[curr_label_name] + 1
+                volume_count[curr_label_name] = volume_count[curr_label_name] + 1
                 continue
 
             # in practice, there will be only one label in trained label file
-            tar_label = np.array(get_closest_one(p, trained_data_list[idx])).round(8)
+            tar_label = get_the_right_one(specific_label, trained_data_list[idx])
+
+            # process none label
+            if tar_label is None:
+                print('No {} in {}_trained'.format(curr_label_name, idx))
+                skip_count[curr_label_name] = skip_count[curr_label_name] + 1
+                volume_count[curr_label_name] = volume_count[curr_label_name] + 1
+                continue
+
+            tar_label = np.array(tar_label).round(8)
             # print('Now compare between\n', label, '\nand\n', tar_label)
             height = np.fabs(tar_label[5]) if np.fabs(label[5]) > np.fabs(tar_label[5]) else np.fabs(label[5])
             # print(label, tar_label)
@@ -171,8 +196,10 @@ if __name__ == '__main__':
             # interest_area rect1_area rect2_area
             # print('Now compare between\n', standard_rectangle_2d, '\nand\n', detected_rectangle_2d)
             overlap = calculate_overlapping(standard_rectangle_2d, detected_rectangle_2d, False)
-            sum_volume = sum_volume + overlap[0] * height
-            volume_count = volume_count + 1
+            sum_volume[curr_label_name] = sum_volume[curr_label_name] + overlap[0] * height
+            volume_count[curr_label_name] = volume_count[curr_label_name] + 1
             # original volume is based on m^3
-            print('[{:03n}]\toverlap_volume({} cm^3)\toverlap({} m^3)\theight({} m)'.format(idx, round(overlap[0] * height * 1e6, 6), round(overlap[0], 6), round(height, 6)))
-    print('average volume:{} cm^3, skip count:{}'.format(np.fabs(sum_volume / volume_count * 1e6 - standard_volume), skip_count))
+            # print('[{:03n}]\toverlap_volume({} cm^3)\toverlap({} m^3)\theight({} m)'.format(idx, round(overlap[0] * height * 1e6, 6), round(overlap[0], 6), round(height, 6)))
+
+    for l in label_list:
+        print('[{}] average volume:{} cm^3, skip count:{}'.format(l, np.fabs(sum_volume[l] / volume_count[l] * 1e6 - standard_volume[l]), skip_count[l]))

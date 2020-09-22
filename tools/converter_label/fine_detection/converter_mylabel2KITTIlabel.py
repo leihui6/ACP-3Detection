@@ -41,7 +41,7 @@ def get_dimensions(_list):
     return list([z, x, y])
 
 
-start_number = 944
+start_number = 0
 
 standard_label_number = 2
 
