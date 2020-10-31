@@ -1,6 +1,25 @@
+"""
+
+Before running this script, please check the UR's TCP, which should have a same coordinate system as
+the camera fixed on it.
+
+Create files and folders as following:
+1) data/
+2) resdata/
+3) data_list.txt
+4) transformation_list.txt
+
+Input:
+1) write all data to be processed into "data_list.txt"
+2) record position(mm) and RPY(degree) from UR panel, writing into "transformation_list.txt"
+
+Output:
+all transformed data will be saved in resdata/, keeping the same name but "_t" at the end.
+
+"""
+
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-import struct
 import math
 import os
 import argparse
@@ -71,8 +90,8 @@ def get_data_list(filename):
                     # magic number of '.pcd'
                     if line_count > 10:
                         # print('item', p)
-                        x, y, z, intensity = p.strip().split(' ')
-                        point_cloud.append([x, y, z, intensity])
+                        x, y, z, _intensity = p.strip().split(' ')
+                        point_cloud.append([x, y, z, _intensity])
             _data_list.append(np.array(point_cloud).astype(float).round(8))
     return _data_list, files_list
 
@@ -84,7 +103,7 @@ def get_transformation(filename):
     value_list = []
     with open(filename, 'r') as f:
         for item in f:
-            print(item)
+            # print(item)
             v = [float(number) for number in item.strip().split(' ')]
             value_list.append(v)
 
@@ -112,7 +131,7 @@ if __name__ == '__main__':
     transformation_list = get_transformation(transformation_list_filename)
 
     if len(data_list) != len(transformation_list):
-        print('size of data doesnt match the transformation')
+        print('size of data({}) doesnt match the transformation size({})'.format(len(data_list), len(transformation_list)))
         exit(-1)
 
     for idx, data in enumerate(data_list):

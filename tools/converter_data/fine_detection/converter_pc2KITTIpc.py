@@ -3,7 +3,7 @@
 
 """
 
-The point cloud processed in this project are captured above a table surface.
+The point cloud processed in this project are captured above a surface.
 So, first we should do is to adjust the height of whole point cloud.
 
 """
@@ -29,7 +29,7 @@ arg = argparse.ArgumentParser("pc2_KITTI_pc")
 #    [0, 1, 0, -1.425],
 #    [0, 0, 0, 1]]))
 
-start_number = 944
+start_number = 0
 
 # 2 positive direction
 transform_matrix = np.mat(np.array([
@@ -38,6 +38,7 @@ transform_matrix = np.mat(np.array([
     [0, -1, 0, -1.425],
     [0, 0, 0, 1]]))
 
+# need to amplified, 10x in paper
 scale = 10
 amplification_matrix = np.mat(np.array([
     [scale, 0, 0, -67.5],

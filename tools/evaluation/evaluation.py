@@ -6,16 +6,24 @@
 import numpy as np
 import copy
 import os
+from scipy.spatial import distance
 from interest_area import calculate_overlapping
 
 # required before use
-label_list = ['Socket', 'Plug']
-standard_volume = {
-    'Socket': 0,
-    'Plug': 0
+label_list = \
+    ['Car']
+#    ['Socket', 'Plug']
+
+standard_volume = \
+{
+    'Car': 179634
+    # 'Socket': 0,
+    # 'Plug': 0
 }
 
-trained_path = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for fine detection/evaluation_250'
+trained_path = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/1000/2/evaluation_220'
+
+log = open("log.txt", 'w')
 
 
 def get_rotation_matrix_z(theta):
@@ -85,9 +93,10 @@ def get_the_right_one(res_standard, res_trained):
             tar_item = copy.deepcopy(t_item)
             tar_item.remove(tar_item[0])
             break
-
-    return tar_item
-
+    if tar_item:
+        return tar_item
+    else:
+        return res_trained[0]
 
 def get_trained_data_list():
     folder_name = trained_path
@@ -145,6 +154,15 @@ def get_delta_between_two_labels(standard_label, trained_label):
             rotation_delta]
 
 
+def get_delta_angle(angle_0, angle_1):
+    return abs(angle_0 - angle_1)
+
+
+def get_delta_distance(position_0, position_1):
+    # print(position_0[0] - position_1[0],' ',position_0[1] - position_1[1],' ',position_0[2] - position_1[2])
+    return distance.euclidean(position_0, position_1)
+
+
 if __name__ == '__main__':
     # get filename list
     trained_data_list = get_trained_data_list()
@@ -155,6 +173,8 @@ if __name__ == '__main__':
 
     skip_count = {key: 0 for key in label_list}
     sum_volume, volume_count = {key: 0 for key in label_list}, {key: 0 for key in label_list}
+
+    delta_angle_list, delta_distance_list, delta_volume_list = [], [], []
 
     for idx, item in enumerate(standard_data_list):
         # print('{}->{}'.format(len(item), len(trained_data_list[idx])))
@@ -190,8 +210,14 @@ if __name__ == '__main__':
             # trained data
             detected_draw_corners, detected_rectangle_2d \
                 = read_from_label(tar_label)
+
             # delta between every items
-            delta_items = get_delta_between_two_labels(label, tar_label)
+            delta_distance = get_delta_distance(
+                (label[0], label[1], label[2]), (tar_label[0], tar_label[1], tar_label[2])
+            )
+            delta_angle = get_delta_angle(
+                np.rad2deg(label[6]), np.rad2deg(tar_label[6])
+            )
 
             # interest_area rect1_area rect2_area
             # print('Now compare between\n', standard_rectangle_2d, '\nand\n', detected_rectangle_2d)
@@ -201,5 +227,24 @@ if __name__ == '__main__':
             # original volume is based on m^3
             # print('[{:03n}]\toverlap_volume({} cm^3)\toverlap({} m^3)\theight({} m)'.format(idx, round(overlap[0] * height * 1e6, 6), round(overlap[0], 6), round(height, 6)))
 
+            # print current information
+            # log.write("{}\t{}\t{}\n".format(overlap[0] * height*1e6, delta_distance, delta_angle))
+            # print(overlap[0] * height)
+            delta_volume_list.append(abs(overlap[0] * height))
+            delta_distance_list.append(delta_distance)
+            delta_angle_list.append(delta_angle)
     for l in label_list:
         print('[{}] average volume:{} cm^3, skip count:{}'.format(l, np.fabs(sum_volume[l] / volume_count[l] * 1e6 - standard_volume[l]), skip_count[l]))
+
+    # output all delta information
+    for i in delta_volume_list:
+        print(i, end=' ')
+    print('\n')
+    for i in delta_distance_list:
+        print(i, end=' ')
+    print('\n')
+    for i in delta_angle_list:
+        print(i, end=' ')
+    print('\n')
+
+    log.close()

@@ -1,5 +1,3 @@
-# convert point cloud captured using PMD camera into the format of KITTI, as followings:
-# transform the coordinate
 
 import copy
 import argparse
