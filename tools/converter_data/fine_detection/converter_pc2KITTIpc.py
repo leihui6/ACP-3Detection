@@ -43,7 +43,7 @@ scale = 10
 amplification_matrix = np.mat(np.array([
     [scale, 0, 0, -67.5],
     [0, scale, 0, 0.09],
-    [0, 0, scale, 15.48],
+    [0, 0, scale, 15.24],
     [0, 0, 0, 1]]))
 
 
