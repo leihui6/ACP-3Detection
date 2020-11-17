@@ -1,4 +1,3 @@
-
 import copy
 import argparse
 import os
@@ -7,12 +6,11 @@ import numpy as np
 
 arg = argparse.ArgumentParser("pc2KITTIpc")
 
-
 transform_matrix = np.mat(np.array([
-            [0, 0, 1, 5.0],
-            [1, 0, 0, 0],
-            [0, 1, 0, -0.815],
-            [0, 0, 0, 1]]))
+    [0, 0, 1, 5.0],
+    [1, 0, 0, 0],
+    [0, 1, 0, -0.815],
+    [0, 0, 0, 1]]))
 
 
 def get_pc(ifile):
@@ -31,12 +29,13 @@ def get_pc(ifile):
 start_number = 0
 
 if __name__ == "__main__":
-    arg.add_argument("--folder", "-f", default="", type=str, help="folder containing many point cloud captured locally", required=True)
+    arg.add_argument("--folder", "-f", default="", type=str, help="folder containing many point cloud captured locally",
+                     required=True)
     args = arg.parse_args()
 
     input_folder = args.folder
     print('input folder:\t', input_folder)
-    output_folder = "KITTI_"+input_folder
+    output_folder = "KITTI_" + input_folder
 
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
@@ -48,15 +47,15 @@ if __name__ == "__main__":
     print('transform matrix is:\n', transform_matrix)
 
     for idx, bin_file in enumerate(bin_list):
-        pc = get_pc(input_folder+'/'+bin_file)
+        pc = get_pc(input_folder + '/' + bin_file)
         pc_numpy = np.mat(np.array(pc)).T
         intensity = copy.deepcopy(pc_numpy[3:])
         pc_numpy[3:] = 1
         # print(pc_numpy.T)
-        t_pc = transform_matrix*pc_numpy
+        t_pc = transform_matrix * pc_numpy
         t_pc[3:] = intensity
         # print(t_pc.T)
-        save_filename = output_folder+'/'+"{:06n}.bin".format(idx+start_number)
+        save_filename = output_folder + '/' + "{:06n}.bin".format(idx + start_number)
         with open(save_filename, "bw") as f:
             t_pc.T.astype(np.float32).tofile(f)
-        print('write into {}({}/{})'.format(save_filename, idx+1, len(bin_list)))
+        print('write into {}({}/{})'.format(save_filename, idx + 1, len(bin_list)))

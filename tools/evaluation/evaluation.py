@@ -15,11 +15,11 @@ label_list = \
 #    ['Socket', 'Plug']
 
 standard_volume = \
-{
-    'Car': 179634
-    # 'Socket': 0,
-    # 'Plug': 0
-}
+    {
+        'Car': 179634
+        # 'Socket': 0,
+        # 'Plug': 0
+    }
 
 trained_path = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/1000/2/evaluation_220'
 
@@ -97,6 +97,7 @@ def get_the_right_one(res_standard, res_trained):
         return tar_item
     else:
         return res_trained[0]
+
 
 def get_trained_data_list():
     folder_name = trained_path
@@ -234,7 +235,8 @@ if __name__ == '__main__':
             delta_distance_list.append(delta_distance)
             delta_angle_list.append(delta_angle)
     for l in label_list:
-        print('[{}] average volume:{} cm^3, skip count:{}'.format(l, np.fabs(sum_volume[l] / volume_count[l] * 1e6 - standard_volume[l]), skip_count[l]))
+        print('[{}] average volume:{} cm^3, skip count:{}'.format(l, np.fabs(
+            sum_volume[l] / volume_count[l] * 1e6 - standard_volume[l]), skip_count[l]))
 
     # output all delta information
     for i in delta_volume_list:

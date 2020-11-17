@@ -59,4 +59,4 @@ Thanks to the **UR robot**, multiple acquisition poses could be obtained and int
 
 ## Contribution
 
-This project so far is maintained by @[Leihui Li](https://github.com/Gltina) and @[Zhengxue Zhou](mailto:zhouzx@eng.au.dk), please be free to contact us if you have any problems.
+This project so far is maintained by @[Leihui Li](https://github.com/Gltina) and @[Zhengxue Zhou](https://github.com/Zhengxuez), please be free to contact us if you have any problems.

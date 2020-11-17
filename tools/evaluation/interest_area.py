@@ -41,7 +41,7 @@ def calculate_overlapping(_rect_1, _rect_2, visualization=False):
         ax.add_patch(PolygonPatch(r2.get_contour(), fc='#000099', alpha=0.7))
         ax.add_patch(PolygonPatch(r1.intersection(r2), fc='#009900', alpha=1))
         pyplot.show()
-    return r1.intersection(r2).area, r1.w * r1.h,  r2.w * r2.h
+    return r1.intersection(r2).area, r1.w * r1.h, r2.w * r2.h
 
 
 '''if __name__ == '__main__':

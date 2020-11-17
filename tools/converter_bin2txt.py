@@ -6,7 +6,7 @@ import argparse
 arg = argparse.ArgumentParser("bin2txt")
 
 
-def convert_kitti_bin_to_pcd(ifile,ofile):
+def convert_kitti_bin_to_pcd(ifile, ofile):
     size_float = 4
     # read from ifile
     list_points = []
@@ -21,7 +21,7 @@ def convert_kitti_bin_to_pcd(ifile,ofile):
     with open(ofile, 'w') as f:
         for points in list_points:
             for item in points:
-                f.write(str(round(item, 8))+' ')
+                f.write(str(round(item, 8)) + ' ')
             f.write('\n')
 
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     args = arg.parse_args()
 
     bin_filename = args.input
-    txt_filename = bin_filename[:bin_filename.find('.')]+".txt"
+    txt_filename = bin_filename[:bin_filename.find('.')] + ".txt"
 
     print("Reading:", bin_filename)
     print("Writing:", txt_filename)

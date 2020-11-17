@@ -44,26 +44,26 @@ def get_rotate(theta):
 
     rx, ry, rz = rotation_matrix[0][0], rotation_matrix[1][1], rotation_matrix[2][2]
     # print(rx, ry, rz)
-    angle = math.sqrt(rx*rx + ry*ry + rz*rz)
+    angle = math.sqrt(rx * rx + ry * ry + rz * rz)
     # print(angle)
-    ux, uy, uz = rx/angle, ry/angle, rz/angle
+    ux, uy, uz = rx / angle, ry / angle, rz / angle
     # print(ux, uy, uz)
     c, s = np.cos(angle), np.sin(angle)
-    C = 1-c
+    C = 1 - c
     r_m = np.mat([
-            [ux * ux * C + c,       ux * uy * C - uz * s,   ux * uz * C + uy * s, 0],
-            [uy * ux * C + uz * s,  uy * uy * C + c,        uy * uz * C - ux * s, 0],
-            [uz * ux * C - uy * s,  uz * uy * C + ux * s,   uz * uz * C + c, 0],
-            [0, 0, 0, 1]
-        ])
+        [ux * ux * C + c, ux * uy * C - uz * s, ux * uz * C + uy * s, 0],
+        [uy * ux * C + uz * s, uy * uy * C + c, uy * uz * C - ux * s, 0],
+        [uz * ux * C - uy * s, uz * uy * C + ux * s, uz * uz * C + c, 0],
+        [0, 0, 0, 1]
+    ])
     return r_m
 
 
 def get_translation(t_list):
     return np.mat([
-        [1, 0, 0, t_list[0]/1000],
-        [0, 1, 0, t_list[1]/1000],
-        [0, 0, 1, t_list[2]/1000],
+        [1, 0, 0, t_list[0] / 1000],
+        [0, 1, 0, t_list[1] / 1000],
+        [0, 0, 1, t_list[2] / 1000],
         [0, 0, 0, 1]
     ])
 
@@ -82,7 +82,7 @@ def get_data_list(filename):
         if ".bin" in item:
             pass
         elif ".pcd" in item:
-            print('loading [{}] from {}'.format(i+1, item))
+            print('loading [{}] from {}'.format(i + 1, item))
             point_cloud = []
 
             with open(item, 'r') as f:
@@ -131,11 +131,12 @@ if __name__ == '__main__':
     transformation_list = get_transformation(transformation_list_filename)
 
     if len(data_list) != len(transformation_list):
-        print('size of data({}) doesnt match the transformation size({})'.format(len(data_list), len(transformation_list)))
+        print('size of data({}) doesnt match the transformation size({})'.format(len(data_list),
+                                                                                 len(transformation_list)))
         exit(-1)
 
     for idx, data in enumerate(data_list):
-        print('[{}] applying ...\n{}'.format(idx+1, transformation_list[idx]))
+        print('[{}] applying ...\n{}'.format(idx + 1, transformation_list[idx]))
         data = data.T
         intensity = copy.deepcopy(data[3:])
         data[3:] = 1

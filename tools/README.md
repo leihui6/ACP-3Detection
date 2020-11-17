@@ -14,7 +14,9 @@ This program will convert all files in a `$(input_folder)` contains many *.bin c
 
 `converter_pc2KITTIpc.py`
 
-## Convert json file generated from [supervise]("https://3d.supervise.ly/projects/) into label files
+## Convert json file generated from **supervise** into label files
+
+### Older Version ([SUPERVISE](https://3d.supervise.ly/projects), which will be closed on *Nov 30*)
 
 `converter_mylabel2KITTIlabel.py` 
 
@@ -25,3 +27,19 @@ mylabel2KITTIlabel: error: the following arguments are required: --input/-i, --o
 # sample
 python converter_mylabel2KITTIlabel.py -i rough_detection.json -o KITTI_label_rough
 ```
+
+### Current Version ([*New version - SUPERVISE*](https://app.supervise.ly/projects/))
+
+``` shell
+usage: mylabel2KITTIlabel [-h] --input_folder INPUT_FOLDER --output_folder
+                          OUTPUT_FOLDER
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input_folder INPUT_FOLDER, -i INPUT_FOLDER
+                        folder containing JSON file form
+                        https://3d.supervise.ly/projects
+  --output_folder OUTPUT_FOLDER, -o OUTPUT_FOLDER
+                        output folder
+```
+
