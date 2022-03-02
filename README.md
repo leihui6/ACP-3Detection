@@ -55,7 +55,34 @@ Detection Result:
 
 ## 3D Construction and Pin Detection
 
-Thanks to the **UR robot**, multiple acquisition poses could be obtained and integrated to rebuild a complete 3D environment. Followed by feature-based strategies to identify position and orientation of pin. For more details about this, please refer to this paper.
+Thanks to the **UR robot**, multiple acquisition poses could be obtained and integrated to rebuild a complete 3D environment. Followed by feature-based strategies to identify position and orientation of pin. For more details about this, please refer to these papers(click as below).
+
+## Papers
+If you found it is useful, please consider cite us:
+
+```
+@article{zhou2022learning,
+  title={Learning-based object detection and localization for a mobile robot manipulator in SME production},
+  author={Zhou, Zhengxue and Li, Leihui and F{\"u}rsterling, Alexander and Durocher, Hjalte Joshua and Mouridsen, Jesper and Zhang, Xuping},
+  journal={Robotics and Computer-Integrated Manufacturing},
+  volume={73},
+  pages={102229},
+  year={2022},
+  publisher={Elsevier}
+}
+
+@inproceedings{zhou2021deep,
+  title={Deep Learning on 3D Object Detection for Automatic Plug-in Charging Using a Mobile Manipulator},
+  author={Zhou, Zhengxue and Li, Leihui and Wang, Riwei and Zhang, Xuping},
+  booktitle={2021 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={4148--4154},
+  year={2021},
+  organization={IEEE}
+}
+```
+
+
+
 
 ## Contribution
 

@@ -12,7 +12,7 @@ target_label['type'] = 'Dontcare'
 target_label['truncated'] = 0.0
 target_label['occluded'] = 0  # used in image
 target_label['alpha'] = 0
-target_label['bbox'] = [0, 0, 50, 50]  # used in image
+target_label['bbox'] = [1, 2, 3, 4]  # used in image
 target_label['dimensions'] = []
 target_label['location'] = []
 target_label['rotation_y'] = 0
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         # produce new annotations
         for annotation in my_annotations:
             tmp_target_label = copy.deepcopy(target_label)
-            tmp_target_label['type'] = annotation['className']
+            tmp_target_label['type'] = annotation['className'].replace(' ','')
             # print(list(annotation['geometry']['dimensions'].values()))
             tmp_target_label['dimensions'] = get_dimensions(
                 list(annotation['geometry']['dimensions'].values()))

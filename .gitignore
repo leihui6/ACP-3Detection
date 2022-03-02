@@ -8,3 +8,5 @@ __pycache__/
 *.zip
 *.txt
 *.xlsx
+*.pcd.json
+./evaluation/

@@ -6,22 +6,26 @@
 import numpy as np
 import copy
 import os
+import sys
 from scipy.spatial import distance
 from interest_area import calculate_overlapping
 
 # required before use
 label_list = \
-    ['Car']
+    ['cutting']
+#     ['PrintingMachine', 'Human']
 #    ['Socket', 'Plug']
 
 standard_volume = \
     {
-        'Car': 179634
+#        'PrintingMachine': 0,
+#        'Human': 0
+        'cutting':0
         # 'Socket': 0,
         # 'Plug': 0
     }
 
-trained_path = 'C:/Users/Lei Li/OneDrive/point cloud data/PMD_datasets/Socket_3Detection/to_KITTI_evaluation/for rough detection/evaluation_result/1000/2/evaluation_220'
+trained_path = 'D:/DataSets/JEF/cutting_500_300_result/evaluation_'
 
 log = open("log.txt", 'w')
 
@@ -88,15 +92,17 @@ def position_dimension_rotation(KITTI_label):
 
 def get_the_right_one(res_standard, res_trained):
     tar_item = None
+    have_one = False
     for t_item in res_trained:
         if res_standard[0] == t_item[0]:
             tar_item = copy.deepcopy(t_item)
             tar_item.remove(tar_item[0])
+            have_one = True
             break
-    if tar_item:
-        return tar_item
+    if have_one:
+        return True, tar_item
     else:
-        return res_trained[0]
+        return False, res_trained[0]
 
 
 def get_trained_data_list():
@@ -118,8 +124,8 @@ def get_standard_data_list():
     standard_data = []
     for filename in standard_filename_list:
         res = get_trained_data(filename)
-        if res:
-            standard_data.append(res)
+        #if res:
+        standard_data.append(res)
     return standard_data
 
 
@@ -165,12 +171,13 @@ def get_delta_distance(position_0, position_1):
 
 
 if __name__ == '__main__':
+    trained_path = trained_path + str(sys.argv[1]) + '/'
     # get filename list
     trained_data_list = get_trained_data_list()
     standard_data_list = get_standard_data_list()
 
-    # print(trained_data_list)
-    # print(standard_data_list)
+    print(len(trained_data_list))
+    print(len(standard_data_list))
 
     skip_count = {key: 0 for key in label_list}
     sum_volume, volume_count = {key: 0 for key in label_list}, {key: 0 for key in label_list}
@@ -179,27 +186,35 @@ if __name__ == '__main__':
 
     for idx, item in enumerate(standard_data_list):
         # print('{}->{}'.format(len(item), len(trained_data_list[idx])))
+        # process invalid data
+        # print(len(trained_data_list[idx]), len(standard_data_list[idx]))
+        if len(trained_data_list[idx]) == 0:
+            # print('len(trained_data_list[idx]) == 0')
+            # skip_count[curr_label_name] = skip_count[curr_label_name] + 1
+            # volume_count[curr_label_name] = volume_count[curr_label_name] + 1
+            delta_volume_list.append(0)
+            continue
+
+        if not item:
+            delta_volume_list.append(0)
+
         for specific_label in item:
             # print(specific_label)
             label = np.array(position_dimension_rotation(specific_label)).round(8)
             curr_label_name = specific_label[0]
 
-            # process invalid data
-            if len(trained_data_list[idx]) == 0:
-                skip_count[curr_label_name] = skip_count[curr_label_name] + 1
-                volume_count[curr_label_name] = volume_count[curr_label_name] + 1
-                continue
-
             # in practice, there will be only one label in trained label file
-            tar_label = get_the_right_one(specific_label, trained_data_list[idx])
-
+            shot_result = get_the_right_one(specific_label, trained_data_list[idx])
+            # print(shot_result)
             # process none label
-            if tar_label is None:
+            if shot_result[0] is False:
                 print('No {} in {}_trained'.format(curr_label_name, idx))
-                skip_count[curr_label_name] = skip_count[curr_label_name] + 1
-                volume_count[curr_label_name] = volume_count[curr_label_name] + 1
-                continue
+                # skip_count[curr_label_name] = skip_count[curr_label_name] + 1
+                # volume_count[curr_label_name] = volume_count[curr_label_name] + 1
+                delta_volume_list.append(0)
+                break
 
+            tar_label = shot_result[1]
             tar_label = np.array(tar_label).round(8)
             # print('Now compare between\n', label, '\nand\n', tar_label)
             height = np.fabs(tar_label[5]) if np.fabs(label[5]) > np.fabs(tar_label[5]) else np.fabs(label[5])
@@ -234,19 +249,28 @@ if __name__ == '__main__':
             delta_volume_list.append(abs(overlap[0] * height))
             delta_distance_list.append(delta_distance)
             delta_angle_list.append(delta_angle)
-    for l in label_list:
-        print('[{}] average volume:{} cm^3, skip count:{}'.format(l, np.fabs(
-            sum_volume[l] / volume_count[l] * 1e6 - standard_volume[l]), skip_count[l]))
 
-    # output all delta information
+    try:
+        for l in label_list:
+            print('[{}] average volume:{} cm^3, skip count:{}'.format(l, np.fabs(
+                sum_volume[l] / volume_count[l] * 1e6 - standard_volume[l]), skip_count[l]))
+    except ZeroDivisionError as e:
+        pass
+
+    print(len(delta_volume_list))
+    output_file = open("result.txt", 'a+')
     for i in delta_volume_list:
-        print(i, end=' ')
-    print('\n')
-    for i in delta_distance_list:
-        print(i, end=' ')
-    print('\n')
-    for i in delta_angle_list:
-        print(i, end=' ')
-    print('\n')
+        output_file.write(str(i) + ' ')
+    output_file.write('\n')
+    # output all delta information
+    # for i in delta_volume_list:
+    #     print(i, end=' ')
+    # print('\n')
+    # for i in delta_distance_list:
+    #     print(i, end=' ')
+    # print('\n')
+    # for i in delta_angle_list:
+    #     print(i, end=' ')
+    # print('\n')
 
     log.close()
